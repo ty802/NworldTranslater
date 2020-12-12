@@ -1,0 +1,9 @@
+{
+  "name": "NworldTranslater",
+  "version": "1.0.0",
+  "description": "World Translated chat for neosvr",
+  "main": "index.js",
+  "repository": "git@github.com:ty802/NworldTranslater.git",
+  "author": "ty802 <kiany@thatnameisnotavailable.com>",
+  "license": "MIT"
+}
