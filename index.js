@@ -14,7 +14,7 @@ wss.on('connection',(socket)=>onConnect(socket))
 const connections = new Map()
 const users = new Map()
 const langs = new Array()
-app.use(express.bodyParser())
+app.use(require('body-parser')())
 function onConnect(socket){
     socket.send('hello world!')
     socket.tid = uuidv4()
@@ -40,7 +40,7 @@ app.get('/',(req,res)=>{
 app.post('/Updates',(req,res)=>{
     var content = ""
     var temp
-    user = usres.get(req.body.User)
+    user = users.get(req.body.User)
     user.postcash.forEach(async element => {
         if(user.lang != element.lang){
             text= await axios.post('https://script.google.com/macros/s/AKfycbxgCdhQVwiuhRa0V4DaPkgY0U2bIUH1rQ2r6p9nPs3_BuL5WvfX/exec',{"type":"Translate","text":'"'+element.text+'"',"source":'"'+element.lang+'"',"target":'"'+user.lang+'"'})
@@ -92,10 +92,11 @@ if(message.startsWith('END:END')){socket.terminate()}else if(message.startsWith(
         socket.send('REQ:0')
     }
 }else if(message.startsWith('TXT:')){
+    msg = {}
     msg.text = message.slice(4)
     msg.user = socket.Username
     msg.lang = socket.lang
-    msg.pos = user.get(socket.Username).pos
+    msg.pos = users.get(socket.Username).pos
     users.forEach(e=>{
         if(e.postcash && !e.NeosSocket){
         e.postcash.push(msg)
