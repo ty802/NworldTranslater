@@ -72,7 +72,7 @@ class Runner {
 }
 function broadcast(data){
     if(data.list){list=data.list}else{list = wss.clients}
-    lsit.forEach((client)=>{
+    list.forEach((client)=>{
         if(data.ws){if(client != data.ws && client.readyState === WebSocket.OPEN){client.send(data.data)}}else{client.send(data.data)}
     })
 }
