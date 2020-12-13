@@ -14,7 +14,7 @@ const connections = new Map()
 function onConnect(socket){
     socket.send('hello world!')
     socket.tid = new uuidv4()
-    console.log(`[Connect] New connection id:${socket.tid}`)\
+    console.log(`[Connect] New connection id:${socket.tid}`)
     connections.set(socket.tid,socket)
     socket.on('message',(e)=>{doMessageReceived(e,socket)})
     socket.on('close',(e)=>{connections.delete(socket.tid)})
