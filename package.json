@@ -5,5 +5,17 @@
   "main": "index.js",
   "repository": "git@github.com:ty802/NworldTranslater.git",
   "author": "ty802 <kiany@thatnameisnotavailable.com>",
-  "license": "MIT"
+  "license": "MIT",
+  "scripts": {
+    "dev": "nodemon -r dotenv/config index.js"
+  },
+  "devDependencies": {
+    "dotenv": "^8.2.0",
+    "nodemon": "^2.0.6"
+  },
+  "dependencies": {
+    "express": "^4.17.1",
+    "uuid": "^8.3.2",
+    "ws": "^7.4.1"
+  }
 }
