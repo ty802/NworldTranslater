@@ -37,11 +37,11 @@ app.get('/',(req,res)=>{
     res.writeHead(200, {'Content-Type': 'text/plain'});
     res.end('Hello World\n');
 })
-app.post('/Updates', async (req,res)=>{
+app.post('/Updates',(req,res)=>{
     var content = ""
     var temp
     user = usres.get(req.body.User)
-    user.postcash.forEach(element => {
+    user.postcash.forEach(async element => {
         if(user.lang != element.lang){
             text= await axios.post('https://script.google.com/macros/s/AKfycbxgCdhQVwiuhRa0V4DaPkgY0U2bIUH1rQ2r6p9nPs3_BuL5WvfX/exec',{"type":"Translate","text":'"'+element.text+'"',"source":'"'+element.lang+'"',"target":'"'+user.lang+'"'})
             text = `<color=#0f0fff>${text}</color>`
