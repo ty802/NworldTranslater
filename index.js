@@ -43,9 +43,9 @@ app.post('/Updates', async (req,res)=>{
     user = users.get(req.body.User)
     await user.postcash.forEach(async element => {
         if(user.lang != element.lang){
-            text= await axios.post('https://script.google.com/macros/s/AKfycbxgCdhQVwiuhRa0V4DaPkgY0U2bIUH1rQ2r6p9nPs3_BuL5WvfX/exec',{"type":"Translate","text":'"'+element.text+'"',"source":'"'+element.lang+'"',"target":'"'+user.lang+'"'})
-            text = `<color=#0f0fff>${text}</color>`
-        }else{text = element.text }
+            var cont = await axios.post('https://script.google.com/macros/s/AKfycbxgCdhQVwiuhRa0V4DaPkgY0U2bIUH1rQ2r6p9nPs3_BuL5WvfX/exec',{"type":"Translate","text":'"'+element.text+'"',"source":'"'+element.lang+'"',"target":'"'+user.lang+'"'})
+            cont = `<color=#0f0fff>${text}</color>`
+        }else{cont = element.text }
         content.concat(`${element.user} : ${text}\\n`)
     });
     res.send(content)
