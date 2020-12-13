@@ -9,6 +9,7 @@ const creds = {key:Privkey,cert:cert}
 const app = express()
 const wshttps = https.createServer(creds)
 const wss = new ws.Server({server:wshttps})
+const nusers = new Map()
 wss.on('connection',(socket)=>onConnect(socket))
 const connections = new Map()
 function onConnect(socket){
@@ -19,6 +20,12 @@ function onConnect(socket){
     socket.on('message',(e)=>{doMessageReceived(e,socket)})
     socket.on('close',(e)=>{connections.delete(socket.tid)})
     broadcast({data:`NC:${socket.tid}`,ws:socket})
+    socket.Typechange = function (){
+        if(nusers.has(this.tid)){nusers.delete(this.tid)}
+        if(this.soctype == 1){
+            nusers.set(this.tid,this)
+        }
+    }
 }
 wshttps.listen(11256,()=>{console.log("[INIT] Https listing")})
 httpsserver = https.createServer(creds,app)
@@ -28,7 +35,19 @@ app.get('/',(req,res)=>{
     res.end('Hello World\n');
 })
 function doMessageReceived(message,socket){
-if(message.startsWith('END:END')){socket.terminate()}
+console.log(`[${socket.tid}]: ${message}`)
+if(message.startsWith('END:END')){socket.terminate()}else if(message.startsWith('SOCTYPE:')){
+   mode = message.split(':')[1]
+   socket.soctype = mode
+   socket.Typechange()
+   socket.send(`Chenged Soctype to ${mode}`)
+}else if (message.startsWith('POS:')){
+    if(socket.soctype != 1){socket.send('[ERROR]Invalid request'); return}
+    pos = message.split(':')[1].split(",")
+    socket.Xpos = pos[0] 
+    socket.Ypos = pos[1]
+    socket.Zpos = pos[2]
+}
 }
 class Runner {
     constructor(funcs = new Array(),endfunc =i=>{},socket)
@@ -52,7 +71,8 @@ class Runner {
     }
 }
 function broadcast(data){
-    wss.clients.forEach((client)=>{
+    if(data.list){list=data.list}else{list = wss.clients}
+    lsit.forEach((client)=>{
         if(data.ws){if(client != data.ws && client.readyState === WebSocket.OPEN){client.send(data.data)}}else{client.send(data.data)}
     })
 }
