@@ -6,6 +6,7 @@ const fs = require('fs')
 const Privkey = fs.readFileSync(process.env.Privkeyfile)
 const cert = fs.readFileSync(process.env.certfile)
 let creds = {key:Privkey,cert:cert}
+const app = express()
 wshttps = https.createServer(creds)
 const wss = new ws.Server({server:wshttps})
 wss.on('connection',(socket)=>onConnect(socket))
@@ -14,3 +15,9 @@ function onConnect(socket){
     socket.terminate()
 }
 wshttps.listen(11256,()=>{console.log("[INIT] Https listing")})
+httpsserver = https.createServer(creds,app)
+httpsserver.listen(443)
+app.get('/',(req,res)=>{
+    res.writeHead(200, {'Content-Type': 'text/plain'});
+    res.end('Hello World\n');
+})
