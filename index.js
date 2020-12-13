@@ -3,6 +3,7 @@ const { v4:uuidv4 } = require('uuid')
 const ws = require("ws")
 const https = require("https")
 const fs = require('fs')
+const { timeStamp } = require('console')
 const Privkey = fs.readFileSync(process.env.Privkeyfile)
 const cert = fs.readFileSync(process.env.certfile)
 const creds = {key:Privkey,cert:cert}
@@ -12,6 +13,7 @@ const wss = new ws.Server({server:wshttps})
 const nusers = new Map()
 wss.on('connection',(socket)=>onConnect(socket))
 const connections = new Map()
+const users = new Map()
 function onConnect(socket){
     socket.send('hello world!')
     socket.tid = uuidv4()
@@ -35,18 +37,43 @@ app.get('/',(req,res)=>{
     res.end('Hello World\n');
 })
 function doMessageReceived(message,socket){
-console.log(`[${socket.tid}]: ${message}`)
+console.log(`[${socket.Username ? `${socket.Username} ${socket.soctype ==1 ? `Neos` : `text` }` : socket.tid }]: ${message}`)
 if(message.startsWith('END:END')){socket.terminate()}else if(message.startsWith('SOCTYPE:')){
-   mode = message.split(':')[1]
+   mode = message.split(':',2)[1]
+   data = message.slice(8)
+   username = data.slice(data.indexOf(':'))
    socket.soctype = mode
    socket.Typechange()
-   socket.send(`Chenged Soctype to ${mode}`)
+
+   if(username){
+       socket.Username = username
+       if(!users.has(username)) users.set(username,{})
+       userentry = users.get(username)
+       if(mode == 1){
+        userentry.NeosSocket = socket
+    }else{
+        userentry.TextSocket = socket
+    }
+    
+    console.log()
+   }
+
+   socket.send(`REQ:1`)
 }else if (message.startsWith('POS:')){
-    if(socket.soctype != 1){socket.send('[ERROR]Invalid request'); return}
+    if(socket.soctype != 1){socket.send('REQ:0'); return}
     pos = message.split(':')[1].split(",")
     socket.Xpos = pos[0] 
     socket.Ypos = pos[1]
     socket.Zpos = pos[2]
+    socket.send('REQ:1')
+    console.log(`updated pos for socket id:${socket.tid}`)
+}else if (message.startsWith('SETLANG:')){
+    if(socket.Username){
+        users.get(socket.Username).lang = message.slice(8)
+        socket.send("REQ:1")
+    }else{
+        socket.send('REQ:0')
+    }
 }
 }
 class Runner {
