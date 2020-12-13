@@ -10,7 +10,7 @@ var app = express(creds)
 app.listen(443)
 app.get('/',(req,res)=>{res.send('helloWorld!')})
 server = https.createServer(creds).listen(11256,()=>{console.log("[INIT] Https listing")})
-wss = new ws.Server(server)
+wss = new ws.Server({server:server})
 wss.on('connection',(e)=>{onConnect(e)})
 function onConnect(socket){
 socket.send('Hello World!')
