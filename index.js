@@ -37,20 +37,25 @@ app.get('/',(req,res)=>{
     res.writeHead(200, {'Content-Type': 'text/plain'});
     res.end('Hello World\n');
 })
+async function translate(text,source,target){
+    if(source==target){ return text};
+    text = await axios.post('https://script.google.com/macros/s/AKfycbxgCdhQVwiuhRa0V4DaPkgY0U2bIUH1rQ2r6p9nPs3_BuL5WvfX/exec',{"type":"Translate","text":'"'+text+'"',"source":'"'+source+'"',"target":'"'+target+'"'})
+    cont = `<color=#0f0fff>${text}</color>`
+    return cont
+}
 app.post('/Updates', async (req,res)=>{
     var content = ""
     var temp
     user = users.get(req.body.User)
-    await user.postcash.forEach(async element => {
-        if(user.lang != element.lang){
-            var cont = await axios.post('https://script.google.com/macros/s/AKfycbxgCdhQVwiuhRa0V4DaPkgY0U2bIUH1rQ2r6p9nPs3_BuL5WvfX/exec',{"type":"Translate","text":'"'+element.text+'"',"source":'"'+element.lang+'"',"target":'"'+user.lang+'"'})
-            cont = `<color=#0f0fff>${text}</color>`
-        }else{cont = element.text }
+    if(!user) {res.send('Webapp Not Connected'); return}
+    for (let index = 0; index < user.postcash.length; index++) {
+        const element = user.postcash[index];
+        cont = await translate(element.test,element.lang,user.lang)
+        console.log(`[${req.body.User}]:got update: ${cont}`)
         content.concat(`${element.user} : ${text}\\n`)
-    });
+    }
     res.send(content)
-    
-})
+});
 app.post('/',(req,res)=>{
 
 })
@@ -88,7 +93,9 @@ if(message.startsWith('END:END')){socket.terminate()}else if(message.startsWith(
     users.get(socket.Username).pos =pos
 }else if (message.startsWith('SETLANG:')){
     if(socket.Username){
-        users.get(socket.Username).lang = message.slice(8)
+        lang = message.slice(8)
+        if(!langs.includes(lang)){langs.push(lang)}
+        users.get(socket.Username).lang = 
         socket.send("REQ:1")
     }else{
         socket.send('REQ:0')
