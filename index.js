@@ -37,17 +37,19 @@ app.get('/',(req,res)=>{
     res.writeHead(200, {'Content-Type': 'text/plain'});
     res.end('Hello World\n');
 })
-app.post('/Updates',(req,res)=>{
+app.post('/Updates', async (req,res)=>{
     var content = ""
     var temp
     user = users.get(req.body.User)
-    user.postcash.forEach(async element => {
+    await user.postcash.forEach(async element => {
         if(user.lang != element.lang){
             text= await axios.post('https://script.google.com/macros/s/AKfycbxgCdhQVwiuhRa0V4DaPkgY0U2bIUH1rQ2r6p9nPs3_BuL5WvfX/exec',{"type":"Translate","text":'"'+element.text+'"',"source":'"'+element.lang+'"',"target":'"'+user.lang+'"'})
             text = `<color=#0f0fff>${text}</color>`
         }else{text = element.text }
         content.concat(`${element.user} : ${text}\\n`)
     });
+    res.send(content)
+    
 })
 app.post('/',(req,res)=>{
 
@@ -71,7 +73,7 @@ if(message.startsWith('END:END')){socket.terminate()}else if(message.startsWith(
         userentry.TextSocket = socket
         }
     userentry.postcash = new Array()
-    console.log()
+    console.log(`Got user ${username} id:${socket.tid}`)
    }
 
    socket.send(`REQ:1`)
@@ -128,6 +130,6 @@ class Runner {
 function broadcast(data){
     if(data.list){list=data.list}else{list = wss.clients}
     list.forEach((client)=>{
-        if(data.ws){if(client != data.ws && client.readyState === WebSocket.OPEN){client.send(data.data)}}else{client.send(data.data)}
+        if(data.ws){if(client != data.ws && client.readyState == 1){client.send(data.data)}}else{client.send(data.data)}
     })
 }
