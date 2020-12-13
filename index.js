@@ -3,10 +3,9 @@ const { v4:uuidv4 } = require('uuid')
 const ws = require("ws")
 const https = require("https")
 const fs = require('fs')
-const { timeStamp } = require('console')
-const Privkey = fs.readFileSync(process.env.Privkeyfile)
-const cert = fs.readFileSync(process.env.certfile)
-const creds = {key:Privkey,cert:cert}
+const axios = require('axios')
+const { text } = require('express')
+const creds = {key:fs.readFileSync(process.env.Privkeyfile),cert:fs.readFileSync(process.env.certfile)}
 const app = express()
 const wshttps = https.createServer(creds)
 const wss = new ws.Server({server:wshttps})
@@ -14,6 +13,8 @@ const nusers = new Map()
 wss.on('connection',(socket)=>onConnect(socket))
 const connections = new Map()
 const users = new Map()
+const langs = new Array()
+app.use(express.bodyParser())
 function onConnect(socket){
     socket.send('hello world!')
     socket.tid = uuidv4()
@@ -36,12 +37,26 @@ app.get('/',(req,res)=>{
     res.writeHead(200, {'Content-Type': 'text/plain'});
     res.end('Hello World\n');
 })
+app.post('/Updates', async (req,res)=>{
+    var content = ""
+    var temp
+    user = usres.get(req.body.User)
+    user.postcash.forEach(element => {
+        if(user.lang != element.lang){
+          text = `<color=#0f0fff>${await axios.post('https://script.google.com/macros/s/AKfycbxgCdhQVwiuhRa0V4DaPkgY0U2bIUH1rQ2r6p9nPs3_BuL5WvfX/exec',{type:"Translate",text:element.text,source:element.lang,target:user.lang})}</color>`
+        }else{text = element.text }
+        content.concat(`${element.user} : ${text}\\n`)
+    });
+})
+app.post('/',(req,res)=>{
+
+})
 function doMessageReceived(message,socket){
 console.log(`[${socket.Username ? `${socket.Username} ${socket.soctype ==1 ? `Neos` : `text` }` : socket.tid }]: ${message}`)
 if(message.startsWith('END:END')){socket.terminate()}else if(message.startsWith('SOCTYPE:')){
    mode = message.split(':',2)[1]
    data = message.slice(8)
-   username = data.slice(data.indexOf(':'))
+   username = data.slice((data.indexOf(':')+1))
    socket.soctype = mode
    socket.Typechange()
 
@@ -51,10 +66,10 @@ if(message.startsWith('END:END')){socket.terminate()}else if(message.startsWith(
        userentry = users.get(username)
        if(mode == 1){
         userentry.NeosSocket = socket
-    }else{
+        }else{
         userentry.TextSocket = socket
-    }
-    
+        }
+    userentry.postcash = new Array()
     console.log()
    }
 
@@ -67,6 +82,7 @@ if(message.startsWith('END:END')){socket.terminate()}else if(message.startsWith(
     socket.Zpos = pos[2]
     socket.send('REQ:1')
     console.log(`updated pos for socket id:${socket.tid}`)
+    users.get(socket.Username).pos =pos
 }else if (message.startsWith('SETLANG:')){
     if(socket.Username){
         users.get(socket.Username).lang = message.slice(8)
@@ -74,6 +90,16 @@ if(message.startsWith('END:END')){socket.terminate()}else if(message.startsWith(
     }else{
         socket.send('REQ:0')
     }
+}else if(message.startsWith('TXT:')){
+    msg.text = message.slice(4)
+    msg.user = socket.Username
+    msg.lang = socket.lang
+    msg.pos = user.get(socket.Username).pos
+    users.forEach(e=>{
+        if(e.postcash && !e.NeosSocket){
+        e.postcash.push(msg)
+        }else{}
+    })
 }
 }
 class Runner {
