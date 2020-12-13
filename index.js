@@ -13,7 +13,7 @@ wss.on('connection',(socket)=>onConnect(socket))
 const connections = new Map()
 function onConnect(socket){
     socket.send('hello world!')
-    socket.tid = new uuidv4()
+    socket.tid = uuidv4()
     console.log(`[Connect] New connection id:${socket.tid}`)
     connections.set(socket.tid,socket)
     socket.on('message',(e)=>{doMessageReceived(e,socket)})
@@ -53,6 +53,6 @@ class Runner {
 }
 function broadcast(data){
     wss.clients.forEach((client)=>{
-        if(data.ws){if(client != socket.ws && client.readyState === WebSocket.OPEN){client.send(data.data)}}else{client.send(data.data)}
+        if(data.ws){if(client != data.ws && client.readyState === WebSocket.OPEN){client.send(data.data)}}else{client.send(data.data)}
     })
 }
