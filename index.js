@@ -62,7 +62,8 @@ app.post('/Updates', (req,res)=>{
         console.log(`[${req.body.User}]:got update: orgtext:${element.text} text:${element.langs[user.lang]}`)
         content =`${content}${req.body.User}:${element.langs[user.lang]}\n`
     }
-    res.end(content)
+    res.send(content)
+    res.send()
 });
 app.post('/',(req,res)=>{
 
