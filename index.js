@@ -59,7 +59,7 @@ app.post('/Updates', async (req,res)=>{
 app.post('/',(req,res)=>{
 
 })
-function doMessageReceived(message,socket){
+async function doMessageReceived(message,socket){
 console.log(`[${socket.Username ? `${socket.Username} ${socket.soctype ==1 ? `Neos` : `text` }` : socket.tid }]: ${message}`)
 if(message.startsWith('END:END')){socket.terminate()}else if(message.startsWith('SOCTYPE:')){
    mode = message.split(':',2)[1]
@@ -105,7 +105,11 @@ if(message.startsWith('END:END')){socket.terminate()}else if(message.startsWith(
     msg.text = message.slice(4)
     msg.user = socket.Username
     msg.lang = socket.lang
+    msg.langs = new Map()
     msg.pos = users.get(socket.Username).pos
+    for(let i=0;i < langs.length(); i++){
+       msg.langs[langs[i]] = await translate(msg.text,msg.lang,langs[i])
+    }
     users.forEach(e=>{
         if(e.postcash && !e.NeosSocket){
         e.postcash.push(msg)
