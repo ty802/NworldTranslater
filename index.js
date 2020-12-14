@@ -61,7 +61,7 @@ app.post('/Updates', (req,res)=>{
     while(user.postcash.length > 0){
         const element = user.postcash.shift()
         console.log(`[${req.body.User}]:got update: orgtext:${element.text} text:${element.langs[user.lang]}`)
-        content =`${content}${req.body.User}:${element.langs[user.lang]}\n`
+        content =`${content}${element.user}:${element.langs[user.lang]}\n`
     }
     if(user.postcash.length =0){
         res.end(':NODATA:')
