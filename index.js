@@ -49,9 +49,9 @@ app.post('/Updates', async (req,res)=>{
     user = users.get(req.body.User)
     if(!user) {res.send('Webapp Not Connected'); return}
     for (let index = 0; index < user.postcash.length; index++) {
-        const element = user.postcash[index];
+        const element = user.postcash.shift()
         cont = await translate(element.test,element.lang,user.lang)
-        console.log(`[${req.body.User}]:got update: ${cont}`)
+        console.log(`[${req.body.User}]:got update: orgtext:${element.text} text:${cont}`)
         content.concat(`${element.user} : ${text}\\n`)
     }
     res.send(content)
