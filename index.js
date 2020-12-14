@@ -37,6 +37,7 @@ function onConnect(socket){
         users.forEach((e)=>{
             if (!langs.includes(e.lang)){langs.push(e.lang)}
         })
+        users.delete(socket.Username)
     })
 }
 wshttps.listen(11256,()=>{console.log("[INIT] Https listing")})
@@ -62,8 +63,11 @@ app.post('/Updates', (req,res)=>{
         console.log(`[${req.body.User}]:got update: orgtext:${element.text} text:${element.langs[user.lang]}`)
         content =`${content}${req.body.User}:${element.langs[user.lang]}\n`
     }
+    if(user.postcash.length =0){
+        res.end(':NODATA:')
+    }
     res.send(content)
-    res.send()
+    res.end()
 });
 app.post('/',(req,res)=>{
 
