@@ -29,7 +29,7 @@ function onConnect(socket){
             nusers.set(this.tid,this)
         }
     }
-    socket.on('disconnect',()=>{
+    socket.on('close',()=>{
         console.log(`lost ${socket.Username} rebuilding leng list`)
         while (langs.length > 0){
             langs.pop()
@@ -88,6 +88,7 @@ if(message.startsWith('END:END')){socket.terminate()}else if(message.startsWith(
         }
     userentry.postcash = new Array()
     console.log(`Got user ${username} id:${socket.tid}`)
+    broadcast({data:`${username} has joind`,socket:socket})
    }
 
    socket.send(`REQ:1`)
@@ -123,7 +124,7 @@ if(message.startsWith('END:END')){socket.terminate()}else if(message.startsWith(
         if(e.postcash && !e.NeosSocket){
         e.postcash.push(msg)
         }else if (e.NeosSocket){
-            e.NeosSocket.send(meg.langs[e.lang])
+            e.NeosSocket.send(meg.langs[e.lang]).catch()
         }
     })
 }
