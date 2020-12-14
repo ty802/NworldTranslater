@@ -122,7 +122,9 @@ if(message.startsWith('END:END')){socket.terminate()}else if(message.startsWith(
     users.forEach(e=>{
         if(e.postcash && !e.NeosSocket){
         e.postcash.push(msg)
-        }else{}
+        }else if (e.NeosSocket){
+            e.NeosSocket.send(meg.langs[e.lang])
+        }
     })
 }
 }
