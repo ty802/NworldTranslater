@@ -104,8 +104,9 @@ if(message.startsWith('END:END')){socket.terminate()}else if(message.startsWith(
 }else if (message.startsWith('SETLANG:')){
     if(socket.Username){
         lang = message.slice(8)
+        socket.lang=lang    
         if(!langs.includes(lang)){langs.push(lang)}
-        users.get(socket.Username).lang = 
+        users.get(socket.Username).lang = lang
         socket.send("REQ:1")
     }else{
         socket.send('REQ:0')
@@ -124,7 +125,7 @@ if(message.startsWith('END:END')){socket.terminate()}else if(message.startsWith(
         if(e.postcash && !e.NeosSocket){
         e.postcash.push(msg)
         }else if (e.NeosSocket){
-            e.NeosSocket.send(msg.langs[e.lang]).catch()
+            e.NeosSocket.send(msg.langs[e.lang])
         }
     })
 }
