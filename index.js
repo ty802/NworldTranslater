@@ -52,16 +52,15 @@ async function translate(text,source,target){
     cont = `<color=#0f0fff>${text.data}</color>`
     return cont
 }
-app.post('/Updates', async (req,res)=>{
+app.post('/Updates', (req,res)=>{
     var content = ""
     var temp
     user = users.get(req.body.User)
     if(!user) {res.send('Webapp Not Connected'); return}
     while(user.postcash.length > 0){
         const element = user.postcash.shift()
-        cont = await translate(element.test,element.lang,user.lang)
-        console.log(`[${req.body.User}]:got update: orgtext:${element.text} text:${cont}`)
-        content.concat(`${element.user} : ${text}\\n`)
+        console.log(`[${req.body.User}]:got update: orgtext:${element.text} text:${element.langs[user.lang]}`)
+        content.concat(`${element.user} : ${element.langs[user.lang]}\\n`)
     }
     res.send(content)
 });
