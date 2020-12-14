@@ -39,7 +39,7 @@ app.get('/',(req,res)=>{
 })
 async function translate(text,source,target){
     if(source==target){ return text};
-    text = await axios.post('https://script.google.com/macros/s/AKfycbxgCdhQVwiuhRa0V4DaPkgY0U2bIUH1rQ2r6p9nPs3_BuL5WvfX/exec',{"type":"Translate","text":'"'+text+'"',"source":'"'+source+'"',"target":'"'+target+'"'})
+    text = await axios.post('https://script.google.com/macros/s/AKfycbxgCdhQVwiuhRa0V4DaPkgY0U2bIUH1rQ2r6p9nPs3_BuL5WvfX/exec',{type:"Translate",text:'"'+text+'"',source:'"'+source+'"',target:'"'+target+'"'}).catch()
     cont = `<color=#0f0fff>${text}</color>`
     return cont
 }
@@ -107,7 +107,7 @@ if(message.startsWith('END:END')){socket.terminate()}else if(message.startsWith(
     msg.lang = socket.lang
     msg.langs = new Map()
     msg.pos = users.get(socket.Username).pos
-    for(let i=0;i < langs.length(); i++){
+    for(let i=0;i < langs.length; i++){
        msg.langs[langs[i]] = await translate(msg.text,msg.lang,langs[i])
     }
     users.forEach(e=>{
