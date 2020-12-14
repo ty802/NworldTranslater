@@ -29,6 +29,15 @@ function onConnect(socket){
             nusers.set(this.tid,this)
         }
     }
+    socket.on('disconnect',()=>{
+        console.log(`lost ${socket.Username} rebuilding leng list`)
+        while (langs.length > 0){
+            langs.pop()
+        }
+        users.forEach((e)=>{
+            if (!langs.includes(e.lang)){langs.push(e.lang)}
+        })
+    })
 }
 wshttps.listen(11256,()=>{console.log("[INIT] Https listing")})
 httpsserver = https.createServer(creds,app)
@@ -39,8 +48,8 @@ app.get('/',(req,res)=>{
 })
 async function translate(text,source,target){
     if(source==target){ return text};
-    await axios.post('https://script.google.com/macros/s/AKfycbxgCdhQVwiuhRa0V4DaPkgY0U2bIUH1rQ2r6p9nPs3_BuL5WvfX/exec',{type:"Translate",text:'"'+text+'"',source:'"'+source+'"',target:'"'+target+'"'}).then((e)=>{text=e}).catch()
-    cont = `<color=#0f0fff>${text}</color>`
+    await axios.post('https://script.google.com/macros/s/AKfycbxgCdhQVwiuhRa0V4DaPkgY0U2bIUH1rQ2r6p9nPs3_BuL5WvfX/exec',{type:"Translate",text:text,source:source,target:target}).then((e)=>{text=e}).catch()
+    cont = `<color=#0f0fff>${text.data}</color>`
     return cont
 }
 app.post('/Updates', async (req,res)=>{
