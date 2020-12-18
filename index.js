@@ -127,7 +127,10 @@ if(message.startsWith('END:END')){socket.terminate()}else if(message.startsWith(
     }
     users.forEach(e=>{
         if(e.postcash && !e.NeosSocket){
-        e.postcash.push(msg)
+            if (e.postcash.length > 9){
+                e.postcash.shift()
+            }
+            e.postcash.push(msg)
         }else if (e.NeosSocket){
             e.NeosSocket.send(msg.langs[e.lang])
         }
