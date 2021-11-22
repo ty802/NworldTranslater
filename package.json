@@ -2,7 +2,7 @@
   "name": "NworldTranslater",
   "version": "1.0.0",
   "description": "World Translated chat for neosvr",
-  "main": "index.js",
+  "main": "index.ts",
   "repository": "git@github.com:ty802/NworldTranslater.git",
   "author": "ty802 <kiany@thatnameisnotavailable.com>",
   "license": "MIT",
@@ -10,13 +10,17 @@
     "dev": "nodemon -r dotenv/config index.js"
   },
   "devDependencies": {
-    "dotenv": "^8.2.0",
-    "nodemon": "^2.0.6"
+    "@types/node": "^16.11.9",
+    "@types/ws": "^8.2.0",
+    "dotenv": "^10.0.0",
+    "nodemon": "^2.0.15"
   },
   "dependencies": {
+    "@bombitmanbomb/neosjs": "^1.15.2",
     "axios": "^0.21.0",
     "body-parser": "^1.19.0",
     "express": "^4.17.1",
+    "typescript": "^4.5.2",
     "uuid": "^8.3.2",
     "ws": "^7.4.1"
   }
